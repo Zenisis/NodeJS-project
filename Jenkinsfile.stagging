@@ -43,14 +43,7 @@ pipeline{
          steps{
             sh '''
 
-            // echo "frontend test stage"
-            // docker run -d -p 3000:3000 --name node-frontend-test-container $docker_username/DOCKER_IMAGE:git-${GIT_COMMIT}
-            // sleep 10
-            // curl -f http://localhost:3000 || exit 1
-            // sleep 5
-            // echo "Tests passed successfully"
-            // docker stop node-frontend-test-container
-            // docker rm node-frontend-test-container
+            
 
             echo "backend test stage"
             docker run -d -p 5002:5002 --name node-test-container $docker_username/$DOCKER_IMAGE:git-${GIT_COMMIT}
