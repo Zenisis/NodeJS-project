@@ -1,5 +1,9 @@
 pipeline{
     agent any
+    environment{
+        AWS_REGION = 'us-east-1'
+        DOCKER-IMAGE = 'node-app'
+    }
     
     stages{
         stage(checkout){
@@ -61,8 +65,9 @@ pipeline{
         stage('Deploy'){
             steps{
                 withCredentials([
-                    usernamePassword(credentialsId:'AWS-KEYS', usernameVariable:'AWS_ACCESS_KEY_ID', passwordVariable:'AWS_SECRET_ACCESS_KEY'),
-                    string(credentialsId: 'aws-region', variable: 'AWS_REGION')
+                    [$class: 'AmazonWebServicesCredentialsBinding', 
+                               credentialsId: 'AWS-KEYS']
+                            
                     ]){
                         sh '''
                         echo "Deploying to AWS EC2 staging instance by SSM"
