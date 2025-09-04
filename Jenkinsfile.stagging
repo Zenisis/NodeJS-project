@@ -10,11 +10,13 @@ pipeline{
         stage('docker login,Build,tag and push'){
             steps{
                 withCredentials([
-                    $class:'AwsCredentialsBinding',credentialsId:'AWS-KEYS',
-                    usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'docker_username', passwordVariable: 'docker_password'),
+                    
                     // usernamePassword(credentialsId:'AWS-KEYS', usernameVariable:'AWS_ACCESS_KEY_ID', passwordVariable:'AWS_SECRET_ACCESS_KEY'),
-                    string(credentialsId: 'aws-region', variable: 'AWS_REGION'),
-                    string(credentialsId: 'DOCKER-IMAGE', variable: 'DOCKER-IMAGE')
+                    // string(credentialsId: 'aws-region', variable: 'AWS_REGION'),
+                    // string(credentialsId: 'DOCKER-IMAGE', variable: 'DOCKER-IMAGE')
+                    usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'docker_username', passwordVariable: 'docker_password'),
+                    $class:'AwsCredentialsBinding',credentialsId:'AWS-KEYS'
+
                   ]){
                     sh '''
                     echo $docker_password | docker login -u $docker_username --password-stdin
