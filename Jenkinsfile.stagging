@@ -43,7 +43,7 @@ pipeline{
          steps{
             sh '''
 
-            echo"frontend test stage"
+            echo "frontend test stage"
             docker run -d -p 3000:3000 --name node-frontend-test-container $docker_username/react-frontend:git-${GIT_COMMIT}
             sleep 10
             curl -f http://localhost:3000 || exit 1
