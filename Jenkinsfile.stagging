@@ -29,7 +29,7 @@ pipeline{
                     cd backend
                     docker build -t $DOCKER_IMAGE:git-${GIT_COMMIT} .
                     docker tag $DOCKER_IMAGE:git-${GIT_COMMIT} $docker_username/$DOCKER_IMAGE:git-${GIT_COMMIT}
-                    docker push $docker_username/$DOCKER-IMAGE:git-${GIT_COMMIT}
+                    docker push $docker_username/$DOCKER_IMAGE:git-${GIT_COMMIT}
                     '''
                     
                 }
