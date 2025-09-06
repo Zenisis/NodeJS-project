@@ -3,6 +3,7 @@ pipeline{
     environment{
         AWS_REGION = 'us-east-1'
         DOCKER_IMAGE = 'node-app'
+        docker_username = 'kartik2311'
     }
     
     stages{
