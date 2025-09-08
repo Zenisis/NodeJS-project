@@ -238,7 +238,9 @@ pipeline {
                             --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-production-cleanup-logs","CloudWatchOutputEnabled":true}' \
                             --comment "Jenkins cleanup command" \
                             --parameters 'commands=[
-                               "docker image prune -f",
+                              "docker rm -f react-frontend-container || true",
+                              "docker rm -f node-backend-container || true",
+                              "docker rmi -f $(docker images -q) || true",
                               #docker rmi -f $docker_username/${frontend_docker_image} || true,
                               #docker rmi -f $docker_username/${backend_docker_image} || true,
                               #docker rmi -f ${frontend_docker_image} || true,
