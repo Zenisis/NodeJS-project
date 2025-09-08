@@ -3,7 +3,7 @@ pipeline {
     parameters{
         choice(name: 
         'ENVIRONMENT', 
-        choices: ['staging', 'production'], 
+        choices: ['staging', 'production' 'cleanup'], 
         description: 'Select the deployment environment')
     }
 
@@ -178,6 +178,9 @@ pipeline {
 
     
         stage('Cleanup') {
+            choices {
+                expression { return params.ENVIRONMENT == 'cleanup' }
+            }
           steps {
              sh '''
                 echo "Cleaning up local Docker images"
