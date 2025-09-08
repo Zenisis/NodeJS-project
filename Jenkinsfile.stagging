@@ -189,7 +189,7 @@ pipeline {
             }
             steps {
                 withCredentials([
-                   [ class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS' ]
+                   [class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS']
                 ])
                 {
                     script{
