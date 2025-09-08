@@ -188,8 +188,8 @@ pipeline {
                 expression { return params.ENVIRONMENT == 'cleanup-for-dev' }
             }
             steps {
-                withCredentials([
-                   [class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS']
+               withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS']
                 ])
                 {
                     script{
@@ -223,7 +223,7 @@ pipeline {
             }
             steps {
                 withCredentials([
-                    [class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS'] 
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS']
                 ])
                 {
                     script{
