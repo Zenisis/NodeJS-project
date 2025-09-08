@@ -91,11 +91,10 @@ pipeline {
         }
 
         stage('Deploy to dev') {
-            when{
-                branch 'main'
-            }
+            
             when {
-                expression { return params.ENVIRONMENT == 'staging' }
+                expression { return params.ENVIRONMENT == 'staging' },
+                branch 'main'
             }
             steps {
                 withCredentials([
