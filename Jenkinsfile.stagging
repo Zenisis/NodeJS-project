@@ -48,7 +48,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                    echo "Running tests for backend"
+                    echo "Running tests for frontend"
                     docker rm -f react-test-container || true
                     docker run -d -p 3000:80 --name react-test-container $docker_username/react-app:git-${GIT_COMMIT}
                     sleep 10
@@ -60,7 +60,7 @@ pipeline {
 
                     docker rm -f node-test-container || true
                     echo "Backend test stage"
-                    docker run -d -p 5002:5002 --name node-test-container $docker_username/$docker_image:git-${GIT_COMMIT}
+                    docker run -d -p 5002:5002 --name node-test-container $docker_username/$node-app:git-${GIT_COMMIT}
                     sleep 10
                     curl -f http://localhost:5002/api/message || exit 1
                     curl -f http://localhost:5002/api/info || exit 1
