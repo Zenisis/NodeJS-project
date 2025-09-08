@@ -71,7 +71,7 @@ pipeline{
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
 
             aws ssm send-command \
-            --instance-ids "i-0c3c0112af4dd2de4" \
+            --instance-ids "i-00b40ba198f388a4b" \
             --document-name "AWS-RunShellScript" \
             --comment "Jenkins deployment" \
             --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-deploy-logs","CloudWatchOutputEnabled":true}'\
