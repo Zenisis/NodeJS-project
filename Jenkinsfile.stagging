@@ -1,5 +1,13 @@
 pipeline {
     agent any
+    parameters{
+        choice(name: 
+        'ENVIRONMENT', 
+        choices: ['staging', 'production'], 
+        description: 'Select the deployment environment')
+    }
+
+
 
     environment {
         AWS_REGION = 'us-east-1'
@@ -72,7 +80,10 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to dev') {
+            when {
+                expression { return params.ENVIRONMENT == 'staging' }
+            }
             steps {
                 withCredentials([
                     [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS']
@@ -88,7 +99,7 @@ pipeline {
                                 --instance-ids "i-00b40ba198f388a4b" \
                                 --document-name "AWS-RunShellScript" \
                                 --comment "Jenkins deployment" \
-                                --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-deploy-logs","CloudWatchOutputEnabled":true}' \
+                                --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-stagging-logs","CloudWatchOutputEnabled":true}' \
                                 --parameters 'commands=[
                                     "sudo systemctl start docker",
                                     "sudo systemctl enable docker",
@@ -113,5 +124,68 @@ pipeline {
             }
         }
 
+        stage('deploy to production') {
+            when {
+                expression { return params.ENVIRONMENT == 'production' }
+            }
+            steps {
+                echo 'Deploy to production stage - Manual Approval Required'
+                input message: 'Approve deployment to production?', ok: 'Deploy'
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS']
+                ]) {
+                    script {
+                        sh """
+                            echo "Deploying to AWS EC2 production instance via SSM"
+                            aws configure set region $AWS_REGION
+                            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+                            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY  
+
+
+                            aws ssm send-command \
+                                --instance-ids "i-097759ec4fc7436a7" \
+                                --document-name "AWS-RunShellScript" \
+                                --comment "Jenkins deployment to production" \
+                                --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-production-logs","CloudWatchOutputEnabled":true}' \
+                                --parameters 'commands=[
+                                    "sudo yum update -y",
+                                    "sudo dnf install docker -y",
+                                    "sudo systemctl start docker",
+                                    "sudo systemctl enable docker",
+                                    "sudo chmod 777 /var/run/docker.sock",
+
+                                    "echo frontend deployment started",
+                                    "docker pull $docker_username/$frontend_docker_image:git-${GIT_COMMIT}",
+                                    "docker rm -f react-frontend-container || true",
+                                    "docker run -d -p 3000:80 --name react-frontend-container ${docker_username}/${frontend_docker_image}:git-${GIT_COMMIT}",   
+
+                                    "echo backend deployment started",
+                                    "docker rm -f node-backend-container || true",
+                                    "docker pull $docker_username/$backend_docker_image:git-${GIT_COMMIT}",
+                                    "docker run -d -p 5002:5002 --name node-backend-container ${docker_username}/${backend_docker_image}:git-${GIT_COMMIT}"
+                                ]'
+                            echo "Deployment to production completed"
+                        """
+
+                        
+                    }
+                }
+        
+            }
+        }                 
+
+
+
+    }
+    stage('Cleanup') {
+        steps {
+            sh '''
+                echo "Cleaning up local Docker images"
+                docker rmi -f $docker_username/$frontend_docker_image:git-${GIT_COMMIT} || true
+                docker rmi -f $docker_username/$backend_docker_image:git-${GIT_COMMIT} || true
+                docker rmi -f $frontend_docker_image:git-${GIT_COMMIT} || true
+                docker rmi -f $backend_docker_image:git-${GIT_COMMIT} || true
+            '''
+        }
     }
 }
