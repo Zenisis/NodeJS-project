@@ -183,7 +183,7 @@ pipeline {
             }
             steps {
                 withCredentials([
-                    class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS' 
+                   [ class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS' ]
                 ])
                 sh '''
                 echo "Cleaning up dev_env Docker images"
@@ -213,7 +213,7 @@ pipeline {
             }
             steps {
                 withCredentials([
-                    class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS' 
+                    [class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS'] 
                 ])
                 sh '''
                 echo "Cleaning up production_env Docker images"
