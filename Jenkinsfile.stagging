@@ -238,10 +238,10 @@ pipeline {
                             --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-production-cleanup-logs","CloudWatchOutputEnabled":true}' \
                             --comment "Jenkins cleanup command" \
                             --parameters 'commands=[
-                              "docker rmi -f $docker_username/$frontend_docker_image:git-${GIT_COMMIT} || true",
-                              "docker rmi -f $docker_username/$backend_docker_image:git-${GIT_COMMIT} || true",
-                              "docker rmi -f $frontend_docker_image:git-${GIT_COMMIT} || true",
-                              "docker rmi -f $backend_docker_image:git-${GIT_COMMIT} || true"
+                              "docker rmi -f $docker_username/${frontend_docker_image}:git-${GIT_COMMIT} || true",
+                              "docker rmi -f $docker_username/${backend_docker_image}:git-${GIT_COMMIT} || true",
+                              "docker rmi -f ${frontend_docker_image}:git-${GIT_COMMIT} || true",
+                              "docker rmi -f ${backend_docker_image}:git-${GIT_COMMIT} || true"
                              ]' \
                              --query "Command.CommandId" --output text
 
