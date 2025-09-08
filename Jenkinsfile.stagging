@@ -99,11 +99,11 @@ pipeline {
                                     "echo frontend deployment started",
                                     "docker pull $docker_username/$frontend_docker_image:git-${GIT_COMMIT}",
                                     "docker rm -f react-frontend-container || true",
-                                    "docker run -d -p 3000:3000 --name react-frontend-container ${docker_username}/${frontend_docker_image}:git-${GIT_COMMIT}",
+                                    "docker run -d -p 3000:80 --name react-frontend-container ${docker_username}/${frontend_docker_image}:git-${GIT_COMMIT}",
 
                                     "echo backend deployment started"
                                     "docker rm -f node-backend-container || true",
-                                    "docker pull $backend_docker_username/$docker_image:git-${GIT_COMMIT}",
+                                    "docker pull $docker_username/$backend_docker_image:git-${GIT_COMMIT}",
                                     "docker run -d -p 5002:5002 --name node-backend-container ${docker_username}/${backend_docker_image}:git-${GIT_COMMIT}"
                                 ]'
                             echo "Deployment completed"
