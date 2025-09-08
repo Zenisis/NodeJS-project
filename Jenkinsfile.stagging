@@ -178,7 +178,7 @@ pipeline {
 
     
         stage('Cleanup') {
-            choices {
+            when{
                 expression { return params.ENVIRONMENT == 'cleanup' }
             }
             steps {
