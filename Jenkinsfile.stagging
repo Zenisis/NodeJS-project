@@ -59,11 +59,11 @@ pipeline{
          }
         }
         stage('Deploy'){
-    steps{
-        withCredentials([
+         steps{
+         withCredentials([
             [$class: 'AmazonWebServicesCredentialsBinding', 
              credentialsId: 'AWS-KEYS']
-        ]){
+         ]){
             sh '''
             echo "Deploying to AWS EC2 staging instance by SSM"
             aws configure set region $AWS_REGION
@@ -91,9 +91,9 @@ pipeline{
 
             echo "Deployment completed"
             '''
+          }
+          }      
         }
-    }      
-}
 
     }
 }
