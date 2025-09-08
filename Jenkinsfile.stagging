@@ -59,24 +59,41 @@ pipeline{
          }
         }
         stage('Deploy'){
-            steps{
-                withCredentials([
-                    [$class: 'AmazonWebServicesCredentialsBinding', 
-                               credentialsId: 'AWS-KEYS']
-                            
-                    ]){
-                        sh '''
-                        echo "Deploying to AWS EC2 staging instance by SSM"
-                        aws configure set region $AWS_REGION
-                        aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-                        aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    steps{
+        withCredentials([
+            [$class: 'AmazonWebServicesCredentialsBinding', 
+             credentialsId: 'AWS-KEYS']
+        ]){
+            sh '''
+            echo "Deploying to AWS EC2 staging instance by SSM"
+            aws configure set region $AWS_REGION
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
 
-                        aws ssm send-command --instance-ids "i-0c3c0112af4dd2de4" --document-name "AWS-RunShellScript" --comment "Jenkins deployment" --parameters commands=["docker pull $docker_username/react-frontend:git-${GIT_COMMIT}","docker pull $docker_username/$DOCKER-IMAGE:git-${GIT_COMMIT}","docker stop node-frontend-container || true","docker rm node-frontend-container || true","docker stop node-backend-container || true","docker rm node-backend-container || true","docker run -d -p 3000:3000 --name node-frontend-container $docker_username/react-frontend:git-${GIT_COMMIT}","docker run -d -p 5002:5002 --name node-backend-container $docker_username/$DOCKER-IMAGE:git-${GIT_COMMIT}"]
-                        echo "Deployment completed"
-                        '''
-                    }
-            }      
+            aws ssm send-command \
+            --instance-ids "i-0c3c0112af4dd2de4" \
+            --document-name "AWS-RunShellScript" \
+            --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-deploy-logs","CloudWatchOutputEnabled":true}'\
+
+            --comment "Jenkins deployment" \
+            --parameters '{
+             "commands": [
+               "docker pull $docker_username/react-frontend:git-${GIT_COMMIT}",
+               "docker pull $docker_username/$DOCKER_IMAGE:git-${GIT_COMMIT}",
+               "docker stop node-frontend-container || true",
+               "docker rm node-frontend-container || true",
+               "docker stop node-backend-container || true",
+               "docker rm node-backend-container || true",
+               "docker run -d -p 3000:3000 --name node-frontend-container $docker_username/react-frontend:git-${GIT_COMMIT}",
+               "docker run -d -p 5002:5002 --name node-backend-container $docker_username/$DOCKER_IMAGE:git-${GIT_COMMIT}"
+             ]
+            }'
+
+            echo "Deployment completed"
+            '''
         }
+    }      
+}
 
     }
 }
