@@ -3,7 +3,7 @@ pipeline {
     parameters{
         choice(name: 
         'ENVIRONMENT', 
-        choices: ['staging', 'production', 'cleanup'], 
+        choices: ['staging', 'production', 'cleanup-for-dev', 'cleanup-for-prod'], 
         description: 'Select the deployment environment')
     }
 
@@ -177,17 +177,63 @@ pipeline {
 
 
     
-        stage('Cleanup') {
+        stage('Cleanupfordev') {
             when{
-                expression { return params.ENVIRONMENT == 'cleanup' }
+                expression { return params.ENVIRONMENT == 'cleanup-for-dev' }
             }
             steps {
-             sh '''
-                echo "Cleaning up local Docker images"
-                docker rmi -f $docker_username/$frontend_docker_image:git-${GIT_COMMIT} || true
-                docker rmi -f $docker_username/$backend_docker_image:git-${GIT_COMMIT} || true
-                docker rmi -f $frontend_docker_image:git-${GIT_COMMIT} || true
-                docker rmi -f $backend_docker_image:git-${GIT_COMMIT} || true
+                withCredentials([
+                    class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS' 
+                ])
+                sh '''
+                echo "Cleaning up dev_env Docker images"
+                aws configure set region $AWS_REGION
+                aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+                aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY  
+
+                ssm_command_id=$(aws ssm send-command \
+                    --instance-ids "i-00b40ba198f388a4b" \
+                    --document-name "AWS-RunShellScript" \
+                    --comment "Jenkins cleanup command" \
+                    --parameters 'commands=[
+                        "docker rmi -f $docker_username/$frontend_docker_image:git-${GIT_COMMIT} || true",
+                        "docker rmi -f $docker_username/$backend_docker_image:git-${GIT_COMMIT} || true",
+                        "docker rmi -f $frontend_docker_image:git-${GIT_COMMIT} || true",
+                        "docker rmi -f $backend_docker_image:git-${GIT_COMMIT} || true"
+                    ]' \
+                    --query "Command.CommandId" --output text)
+
+                
+             '''
+            }
+        }
+        stage('Cleanupforprod') {
+            when{
+                expression { return params.ENVIRONMENT == 'cleanup-for-prod' }
+            }
+            steps {
+                withCredentials([
+                    class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS' 
+                ])
+                sh '''
+                echo "Cleaning up production_env Docker images"
+                aws configure set region $AWS_REGION
+                aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+                aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY  
+
+                ssm_command_id=$(aws ssm send-command \
+                    --instance-ids "i-097759ec4fc7436a7" \
+                    --document-name "AWS-RunShellScript" \
+                    --comment "Jenkins cleanup command" \
+                    --parameters 'commands=[
+                        "docker rmi -f $docker_username/$frontend_docker_image:git-${GIT_COMMIT} || true",
+                        "docker rmi -f $docker_username/$backend_docker_image:git-${GIT_COMMIT} || true",
+                        "docker rmi -f $frontend_docker_image:git-${GIT_COMMIT} || true",
+                        "docker rmi -f $backend_docker_image:git-${GIT_COMMIT} || true"
+                    ]' \
+                    --query "Command.CommandId" --output text)
+
+                
              '''
             }
         }
