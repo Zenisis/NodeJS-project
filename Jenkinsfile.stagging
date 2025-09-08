@@ -25,11 +25,13 @@ pipeline {
         }
 
         stage('Docker Login, Build, Tag and Push') {
-            when{
-                branch 'main'
-            }
+            
             when {
-                expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
+                allOf {
+                    branch 'main'
+                    expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
+                }
+                
                 
             }
             steps {
