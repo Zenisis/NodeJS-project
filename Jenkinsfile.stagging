@@ -176,16 +176,17 @@ pipeline {
 
 
 
-    }
-    stage('Cleanup') {
-        steps {
-            sh '''
+    
+        stage('Cleanup') {
+          steps {
+             sh '''
                 echo "Cleaning up local Docker images"
                 docker rmi -f $docker_username/$frontend_docker_image:git-${GIT_COMMIT} || true
                 docker rmi -f $docker_username/$backend_docker_image:git-${GIT_COMMIT} || true
                 docker rmi -f $frontend_docker_image:git-${GIT_COMMIT} || true
                 docker rmi -f $backend_docker_image:git-${GIT_COMMIT} || true
-            '''
+             '''
+           }
         }
     }
 }
