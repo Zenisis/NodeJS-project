@@ -32,7 +32,7 @@ pipeline {
                         cd backend
                         docker build -t $backend_docker_image:git-${GIT_COMMIT} .
                         docker tag $backend_docker_image:git-${GIT_COMMIT} $docker_username/$backend_docker_image:git-${GIT_COMMIT}
-                        docker push $docker_username/$docker_image:git-${GIT_COMMIT}
+                        docker push $docker_username/$backend_docker_image:git-${GIT_COMMIT}
 
 
                         cd ../frontend
