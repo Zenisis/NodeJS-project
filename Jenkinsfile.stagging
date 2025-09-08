@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         AWS_REGION = 'us-east-1'
-        docker_image = 'node-app'
+        backend_docker_image = 'node-app'
+        frontend_docker_image = 'react-app'
         docker_username = 'kartik2311'
     }
 
@@ -29,9 +30,16 @@ pipeline {
                         echo $docker_password | docker login -u $docker_username --password-stdin
                         echo "Run docker build for backend"
                         cd backend
-                        docker build -t $docker_image:git-${GIT_COMMIT} .
-                        docker tag $docker_image:git-${GIT_COMMIT} $docker_username/$docker_image:git-${GIT_COMMIT}
+                        docker build -t $backend_docker_image:git-${GIT_COMMIT} .
+                        docker tag $backend_docker_image:git-${GIT_COMMIT} $docker_username/$backend_docker_image:git-${GIT_COMMIT}
                         docker push $docker_username/$docker_image:git-${GIT_COMMIT}
+
+
+                        cd ../frontend
+                        echo "Run docker build for frontend"
+                        docker build -t $frontend_docker_image:git-${GIT_COMMIT} .
+                        docker tag $frontend_docker_image:git-${GIT_COMMIT} $docker_username/$frontend_docker_image:git-${GIT_COMMIT}
+                        docker push $docker_username/$frontend_docker_image:git-${GIT_COMMIT}
                     '''
                 }
             }
@@ -40,6 +48,16 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
+                    echo "Running tests for backend"
+                    docker rm -f react-test-container || true
+                    docker run -d -p 3000:3000 --name react-test-container $docker_username/react-app:git-${GIT_COMMIT}
+                    sleep 10
+                    curl -f http://localhost:3000 || exit 1
+                    sleep 5
+                    echo "Frontend tests passed successfully"
+                    docker stop react-test-container || true
+                    docker rm -f react-test-container || true
+
                     docker rm -f node-test-container || true
                     echo "Backend test stage"
                     docker run -d -p 5002:5002 --name node-test-container $docker_username/$docker_image:git-${GIT_COMMIT}
@@ -74,12 +92,21 @@ pipeline {
                                 --parameters 'commands=[
                                     "sudo systemctl start docker",
                                     "sudo systemctl enable docker",
-                                    "sudo chmod 777 /var/run/docker.sock",
-                                    "echo docker_username=$docker_username",
-                                    "echo docker_image=$docker_image",
-                                    "echo GIT_COMMIT=$GIT_COMMIT",
-                                    "docker pull $docker_username/$docker_image:git-${GIT_COMMIT}",
-                                    "docker run -d -p 5002:5002 --name node-backend-container ${docker_username}/${docker_image}:git-${GIT_COMMIT}"
+                                    "sudo chmod 777 /var/run/docker.sock"
+                                    // "echo docker_username=$backend_docker_username",
+                                    // "echo docker_image=$docker_image",
+                                    // "echo GIT_COMMIT=$GIT_COMMIT",
+
+
+                                    "echo frontend deployment started",
+                                    "docker pull $docker_username/$frontend_docker_image:git-${GIT_COMMIT}",
+                                    "docker rm -f react-frontend-container || true",
+                                    "docker run -d -p 3000:3000 --name react-frontend-container ${docker_username}/${frontend_docker_image}:git-${GIT_COMMIT}",
+
+                                    "echo backend deployment started"
+                                    "docker rm -f node-backend-container || true",
+                                    "docker pull $backend_docker_username/$docker_image:git-${GIT_COMMIT}",
+                                    "docker run -d -p 5002:5002 --name node-backend-container ${docker_username}/${backend_docker_image}:git-${GIT_COMMIT}"
                                 ]'
                             echo "Deployment completed"
                         """
