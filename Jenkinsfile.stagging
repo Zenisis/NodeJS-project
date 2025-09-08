@@ -73,11 +73,12 @@ pipeline{
             aws ssm send-command \
             --instance-ids "i-0c3c0112af4dd2de4" \
             --document-name "AWS-RunShellScript" \
+            --comment "Jenkins deployment" \
             --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-deploy-logs","CloudWatchOutputEnabled":true}'\
 
-            --comment "Jenkins deployment" \
+            
             --parameters '{
-             "commands": [
+              "commands": [
                "docker pull $docker_username/react-frontend:git-${GIT_COMMIT}",
                "docker pull $docker_username/$DOCKER_IMAGE:git-${GIT_COMMIT}",
                "docker stop node-frontend-container || true",
