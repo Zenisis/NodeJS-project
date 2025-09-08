@@ -239,10 +239,10 @@ pipeline {
                             --comment "Jenkins cleanup command" \
                             --parameters 'commands=[
                                "docker image prune -f",
-                              #"docker rmi -f $docker_username/${frontend_docker_image} || true",
-                              #"docker rmi -f $docker_username/${backend_docker_image} || true",
-                              #"docker rmi -f ${frontend_docker_image} || true",
-                              #"docker rmi -f ${backend_docker_image}  || true"
+                              #docker rmi -f $docker_username/${frontend_docker_image} || true,
+                              #docker rmi -f $docker_username/${backend_docker_image} || true,
+                              #docker rmi -f ${frontend_docker_image} || true,
+                              #docker rmi -f ${backend_docker_image}  || true
                              ]' \
                              --query "Command.CommandId" --output text
 
