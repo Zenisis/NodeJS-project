@@ -93,9 +93,7 @@ pipeline {
                                     "sudo systemctl start docker",
                                     "sudo systemctl enable docker",
                                     "sudo chmod 777 /var/run/docker.sock"
-                                    // "echo docker_username=$backend_docker_username",
-                                    // "echo docker_image=$docker_image",
-                                    // "echo GIT_COMMIT=$GIT_COMMIT",
+                                    
 
 
                                     "echo frontend deployment started",
