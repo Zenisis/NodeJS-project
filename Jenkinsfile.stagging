@@ -84,8 +84,7 @@ pipeline{
                "docker pull $docker_username/$docker_image:git-${GIT_COMMIT}",
                
                
-               "docker stop node-backend-container || true",
-               "docker rm node-backend-container || true",
+               
                
                "docker run -d -p 5002:5002 --name node-backend-container $docker_username/$docker_image:git-${GIT_COMMIT}"
              ]
