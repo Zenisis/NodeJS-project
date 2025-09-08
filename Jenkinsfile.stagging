@@ -92,7 +92,7 @@ pipeline {
                                 --parameters 'commands=[
                                     "sudo systemctl start docker",
                                     "sudo systemctl enable docker",
-                                    "sudo chmod 777 /var/run/docker.sock"
+                                    "sudo chmod 777 /var/run/docker.sock",
                                     
 
 
@@ -101,7 +101,7 @@ pipeline {
                                     "docker rm -f react-frontend-container || true",
                                     "docker run -d -p 3000:80 --name react-frontend-container ${docker_username}/${frontend_docker_image}:git-${GIT_COMMIT}",
 
-                                    "echo backend deployment started"
+                                    "echo backend deployment started",
                                     "docker rm -f node-backend-container || true",
                                     "docker pull $docker_username/$backend_docker_image:git-${GIT_COMMIT}",
                                     "docker run -d -p 5002:5002 --name node-backend-container ${docker_username}/${backend_docker_image}:git-${GIT_COMMIT}"
