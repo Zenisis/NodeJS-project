@@ -241,7 +241,7 @@ pipeline {
                               "docker rmi -f $frontend_docker_image:git-${GIT_COMMIT} || true",
                               "docker rmi -f $backend_docker_image:git-${GIT_COMMIT} || true"
                              ]' \
-                             --query "Command.CommandId" --output text)
+                             --query "Command.CommandId" --output text
 
                 
                              '''
