@@ -77,9 +77,13 @@ pipeline{
             --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-deploy-logs","CloudWatchOutputEnabled":true}'\
             --parameters '{
               "commands": [
+
                "sudo systemctl start docker",
                "sudo systemctl enable docker",
                "sudo chmod 777 /var/run/docker.sock",
+               'echo "docker_username=$docker_username"'
+               'echo "docker_image=$docker_image"'
+               'echo "GIT_COMMIT=$GIT_COMMIT"'
                
                "docker pull $docker_username/$docker_image:git-${GIT_COMMIT}",
                
