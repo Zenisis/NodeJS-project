@@ -50,7 +50,7 @@ pipeline {
                 sh '''
                     echo "Running tests for backend"
                     docker rm -f react-test-container || true
-                    docker run -d -p 3000:3000 --name react-test-container $docker_username/react-app:git-${GIT_COMMIT}
+                    docker run -d -p 80:3000 --name react-test-container $docker_username/react-app:git-${GIT_COMMIT}
                     sleep 10
                     curl -f http://localhost:3000 || exit 1
                     sleep 5
