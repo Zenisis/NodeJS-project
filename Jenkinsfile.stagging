@@ -77,6 +77,9 @@ pipeline{
             --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-deploy-logs","CloudWatchOutputEnabled":true}'\
             --parameters '{
               "commands": [
+               "sudo systemctl start docker",
+               "sudo systemctl enable docker",
+               "sudo chmod 777 /var/run/docker.sock",
                "docker pull $docker_username/react-frontend:git-${GIT_COMMIT}",
                "docker pull $docker_username/$DOCKER_IMAGE:git-${GIT_COMMIT}",
                "docker stop node-frontend-container || true",
