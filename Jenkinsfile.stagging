@@ -75,8 +75,6 @@ pipeline{
             --document-name "AWS-RunShellScript" \
             --comment "Jenkins deployment" \
             --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-deploy-logs","CloudWatchOutputEnabled":true}'\
-
-            
             --parameters '{
               "commands": [
                "docker pull $docker_username/react-frontend:git-${GIT_COMMIT}",
