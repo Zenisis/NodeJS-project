@@ -118,6 +118,8 @@ pipeline {
                                 --comment "Jenkins deployment" \
                                 --cloud-watch-output-config '{"CloudWatchLogGroupName":"stagging-logs","CloudWatchOutputEnabled":true}' \
                                 --parameters 'commands=[
+                                    "sudo yum update -y",
+                                    "sudo dnf install docker -y",
                                     "sudo systemctl start docker",
                                     "sudo systemctl enable docker",
                                     "sudo chmod 777 /var/run/docker.sock",
