@@ -29,7 +29,7 @@ pipeline {
             when {
                 allOf {
                     branch 'main'
-                    expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
+                    expression { return params.ENVIRONMENT == 'staging' }
                 }
                 
                 
