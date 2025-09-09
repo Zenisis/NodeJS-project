@@ -27,10 +27,10 @@ pipeline {
         stage('Docker Login, Build, Tag and Push') {
             
             when {
-                allOf {
-                    branch 'main'
-                    expression { return params.ENVIRONMENT == 'staging' }
-                }
+                
+            
+                expression { return params.ENVIRONMENT == 'staging' }
+                
                 
                 
             }
