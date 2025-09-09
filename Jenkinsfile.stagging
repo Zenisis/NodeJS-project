@@ -29,7 +29,7 @@ pipeline {
             when {
                 
             
-                expression { return params.ENVIRONMENT == 'staging' }
+                expression { return params.ENVIRONMENT == 'staging'|| params.ENVIRONMENT == 'production' }
                 
                 
                 
@@ -95,10 +95,10 @@ pipeline {
         stage('Deploy to dev') {
             
             when {
-                allOf {
+                
                     expression { return params.ENVIRONMENT == 'staging' }
-                    branch 'main'
-                }
+                   
+                
                 
             }
             steps {
