@@ -116,7 +116,7 @@ pipeline {
                                 --instance-ids "i-09799960043d07646" \
                                 --document-name "AWS-RunShellScript" \
                                 --comment "Jenkins deployment" \
-                                --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-stagging-logs","CloudWatchOutputEnabled":true}' \
+                                --cloud-watch-output-config '{"CloudWatchLogGroupName":"stagging-logs","CloudWatchOutputEnabled":true}' \
                                 --parameters 'commands=[
                                     "sudo systemctl start docker",
                                     "sudo systemctl enable docker",
