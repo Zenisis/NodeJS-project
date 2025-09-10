@@ -77,17 +77,17 @@ pipeline {
             steps {
                 script {
                     echo "Running OWASP Dependency Check"
-                    sh """
+                    sh '''
                         mkdir -p owasp-reports
                         docker run --rm \
-                         -e NVD_API_KEY=$(NVD_API_KEY) \
+                         -e NVD_API_KEY=$NVD_API_KEY \
                          -v $(pwd):/src\
                          -v $(pwd)/owasp-reports:/report owasp/dependency-check \
                         --project "NodeJS Project" \
                         --scan /src \
                         --format "ALL" \
                         --out /report
-                    """
+                    '''
                     archiveArtifacts artifacts: 'owasp-reports/*', allowEmptyArchive: true
                 }
             }
