@@ -25,7 +25,10 @@ pipeline {
         }
 
         stage('SonarQube Code Analysis') {
-         steps {
+            when {
+                expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
+            }
+            steps {
              script {
                def scannerHome = tool 'lil-sonarqube'
                withSonarQubeEnv('sonarqube') {
@@ -50,6 +53,9 @@ pipeline {
 
          
         stage('SonarQube Quality Gate') {
+            when {
+                expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
+            }
             steps {
                 script{
 
@@ -60,6 +66,26 @@ pipeline {
                     // } else {
                     //     echo "Quality gate passed: ${qualityGate.status}"
                     // }    
+                }
+            }
+        }
+
+        stage("OWASP Dependency Check") {
+            when {
+                expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
+            }
+            steps {
+                script {
+                    echo "Running OWASP Dependency Check"
+                    sh '''
+                        mkdir -p owasp-reports
+                        docker run --rm -v $(pwd):/src -v $(pwd)/owasp-reports:/report owasp/dependency-check \
+                        --project "NodeJS Project" \
+                        --scan /src \
+                        --format "ALL" \
+                        --out /report
+                    '''
+                    archiveArtifacts artifacts: 'owasp-reports/*', allowEmptyArchive: true
                 }
             }
         }
