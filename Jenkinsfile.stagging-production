@@ -27,7 +27,7 @@ pipeline {
         stage('SonarQube Code Analysis') {
          steps {
              script {
-               def scannerHome = tool 'sonar-scanner-4.7.0.2747'
+               def scannerHome = tool 'lil-sonarqube'
                withSonarQubeEnv('sonarqube') {
                   sh """
                     ${scannerHome}/bin/sonar-scanner \
