@@ -83,7 +83,7 @@ pipeline {
                         --project "NodeJS Project" \
                         --scan /src \
                         --format "ALL" \
-                        --out /report
+                        --out /report \
                         --nvdApiKey aceb4a41-5ab7-4e5b-bda8-bd8f2f52ba24
                     '''
                     archiveArtifacts artifacts: 'owasp-reports/*', allowEmptyArchive: true
