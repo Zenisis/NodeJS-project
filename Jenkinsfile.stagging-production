@@ -24,23 +24,30 @@ pipeline {
             }
         }
 
-        stage ('sonanarqube-scan'){
-            when {
-                expression { return params.ENVIRONMENT == 'staging'|| params.ENVIRONMENT == 'production' }
-            }
-            steps {
-                script {
+        stage ('sonanarqube-code-analysis'){
+            steps{
+                script{
                     def scannerHome = tool 'sonar-scanner-4.7.0.2747'
                     withSonarQubeEnv('sonarqube') {(credentialsId:sonanar-token , installationName: 'sonar-scanner-4.7.0.2747')
                       {
-
                         
                         sh """${scannerHome}/bin/sonar-scanner"
 
-
                           """
                         }  
-                        
+                    }
+                }    
+            }
+            
+        }
+        stage('SonarQube Quality Gate') {
+            steps {
+                script{
+                    def qualityGate = waitForQualityGate()
+                    if (qualityGate.status != 'OK') {
+                        error "Pipeline aborted due to quality gate failure: ${qualityGate.status}"
+                    } else {
+                        echo "Quality gate passed: ${qualityGate.status}"
                     }    
                 }
             }
