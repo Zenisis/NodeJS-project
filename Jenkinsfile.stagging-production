@@ -79,10 +79,7 @@ pipeline {
                     echo "Running OWASP Dependency Check"
                     sh '''
                         mkdir -p owasp-reports
-                        docker run --rm \
-                         -e NVD_API_KEY=$NVD_API_KEY \
-                         -v $(pwd):/src \
-                         -v $(pwd)/owasp-reports:/report owasp/dependency-check \
+                        docker run --rm -e NVD_API_KEY=$NVD_API_KEY -v $(pwd):/src -v $(pwd)/owasp-reports:/report owasp/dependency-check \
                         --project "NodeJS Project" \
                         --scan /src \
                         --format "ALL" \
