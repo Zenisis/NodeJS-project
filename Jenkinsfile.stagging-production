@@ -24,6 +24,25 @@ pipeline {
             }
         }
 
+        stage ('sonanarqube-scan'){
+            when {
+                expression { return params.ENVIRONMENT == 'staging'|| params.ENVIRONMENT == 'production' }
+            }
+            steps {
+                script {
+                    def scannerHome = tool 'sonar-scanner-4.7.0.2747'
+                    withSonarQubeEnv('sonarqube') {
+                        (credentialsId:sonanar-token , installationName: 'sonar-scanner-4.7.0.2747')
+                        sh """${scannerHome}/bin/sonar-scanner"
+
+
+                          """
+                        
+                    }    
+                }
+            }
+        }
+
         stage('Docker Login, Build, Tag and Push') {
             
             when {
