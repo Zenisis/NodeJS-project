@@ -26,6 +26,7 @@ pipeline {
 
         stage('SonarQube Code Analysis') {
             when {
+                // branch 'master'
                 expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
             }
             steps {
@@ -54,6 +55,7 @@ pipeline {
          
         stage('SonarQube Quality Gate') {
             when {
+                // branch 'master'
                 expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
             }
             steps {
@@ -71,6 +73,7 @@ pipeline {
         }
         stage("Install Dependencies") {
             when {
+                // branch 'master'
                 expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
             }
             steps {
@@ -88,6 +91,7 @@ pipeline {
 
         stage("OWASP Dependency Check") {
             when {
+                // branch 'master'
                 expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
             }
             steps {
@@ -111,6 +115,8 @@ pipeline {
         stage('Docker Login, Build, Tag and Push') {
             
             when {
+
+                // branch 'master'
                 
             
                 expression { return params.ENVIRONMENT == 'staging'|| params.ENVIRONMENT == 'production' }
@@ -147,6 +153,7 @@ pipeline {
         }
         stage("Trviy-scan"){
             when{
+                // branch 'master'
                 expression {return params.ENVIRONMENT == 'staging'}
             }
             steps{
@@ -179,6 +186,7 @@ pipeline {
 
         stage('Test') {
             when {
+                // branch 'master'
                 expression { return params.ENVIRONMENT == 'staging' }
             }
             steps {
@@ -210,6 +218,7 @@ pipeline {
         stage('Deploy to dev') {
             
             when {
+                // branch 'master'
                 
                     expression { return params.ENVIRONMENT == 'staging' }
                    
@@ -260,6 +269,7 @@ pipeline {
 
         stage('deploy to production') {
             when {
+                // branch 'production'
                 expression { return params.ENVIRONMENT == 'production' }
             }
             steps {
@@ -313,6 +323,8 @@ pipeline {
     
         stage('Cleanupfordev') {
             when{
+                // branch 'master'
+            
                 expression { return params.ENVIRONMENT == 'cleanup-for-dev' }
             }
             steps {
@@ -348,6 +360,7 @@ pipeline {
         }
         stage('Cleanupforprod') {
             when{
+                // branch 'production'
                 expression { return params.ENVIRONMENT == 'cleanup-for-prod' }
             }
             steps {
