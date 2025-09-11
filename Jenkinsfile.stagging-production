@@ -297,7 +297,9 @@ pipeline {
                                     "sudo chmod 777 /var/run/docker.sock",
 
                                     echo "cloning repo-for docker-compose",
-                                    git clone 
+                                    git clone https://github.com/Zenisis/NodeJS-project.git || true,
+                                    git pull origin production || true,
+                                    
 
                                     "echo frontend deployment started",
                                     "docker pull $docker_username/$frontend_docker_image:git-${GIT_COMMIT}",
