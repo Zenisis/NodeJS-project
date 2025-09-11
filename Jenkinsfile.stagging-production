@@ -164,7 +164,7 @@ pipeline {
                    $(pwd)/trivy-reports:/trivy-reports aquasec/trivy image --format json -o /trivy-reports/backend-trivy-report.json $docker_username/$backend_docker_image:git-${GIT_COMMIT}
                    
                    echo "Running Trivy Scan for frontend"   
-                   docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v  
+                   docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v \ 
                    $(pwd)/trivy-reports:/trivy-reports aquasec/trivy image --format json -o /trivy-reports/frontend-trivy-report.json $docker_username/$frontend_docker_image:git-${GIT_COMMIT}
                  '''
                  sh ''' 
