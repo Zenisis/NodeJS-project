@@ -69,6 +69,22 @@ pipeline {
                 }
             }
         }
+        stage("Install Dependencies") {
+            when {
+                expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
+            }
+            steps {
+                sh '''
+                    echo "Installing backend dependencies"
+                    cd backend
+                    npm install
+
+                    echo "Installing frontend dependencies"
+                    cd ../frontend
+                    npm install
+                '''
+            }
+        }
 
         stage("OWASP Dependency Check") {
             when {
