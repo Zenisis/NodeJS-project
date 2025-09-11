@@ -158,26 +158,25 @@ pipeline {
             }
             steps {
                sh '''
-                 mkdir -p trivy-reports
-                 echo "Running Trivy Scan for backend"
+                mkdir -p trivy-reports
+                echo "Running Trivy Scan for backend"
                 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
                  -v $(pwd)/trivy-reports:/trivy-reports aquasec/trivy image \
                  --format json -o /trivy-reports/backend-trivy.json $docker_username/$backend_docker_image:git-${GIT_COMMIT}
+                echo "Converting JSON report to HTML for backend"
+                docker run --rm -v $(pwd)/trivy-reports:/reports aquasec/trivy convert \
+                 --format template --template "@contrib/html.tpl" /reports/backend-trivy.json -o /reports/backend-trivy.html
 
                 echo "Running Trivy Scan for frontend"
                 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
                   -v $(pwd)/trivy-reports:/trivy-reports aquasec/trivy image \
                   --format json -o /trivy-reports/frontend-trivy.json $docker_username/$frontend_docker_image:git-${GIT_COMMIT}
+                echo "Generating HTML report for frontend"  
+                docker run --rm -v $(pwd)/trivy-reports:/reports aquasec/trivy convert \
+                 --format template --template "@contrib/html.tpl" /reports/frontend-trivy.json -o /reports/frontend-trivy.html  
                 '''
 
-                sh '''
-                  docker run --rm -v $(pwd)/trivy-reports:/reports aquasec/trivy convert \
-                  --format template --template "@contrib/html.tpl" /reports/backend-trivy.json > /reports/backend-trivy.html
-
-                  docker run --rm -v $(pwd)/trivy-reports:/reports aquasec/trivy convert \
-                  --format template --template "@contrib/html.tpl" /reports/frontend-trivy.json > /reports/frontend-trivy.html
-             '''
-
+                
               archiveArtifacts artifacts: 'trivy-reports/*', allowEmptyArchive: true
             }
         }
