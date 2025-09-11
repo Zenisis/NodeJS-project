@@ -285,7 +285,7 @@ pipeline {
 
 
                             aws ssm send-command \
-                                --instance-ids "i-097759ec4fc7436a7" \
+                                --instance-ids "i-0a8fda6740255cc9e" \
                                 --document-name "AWS-RunShellScript" \
                                 --comment "Jenkins deployment to production" \
                                 --cloud-watch-output-config '{"CloudWatchLogGroupName":"jenkins-production-logs","CloudWatchOutputEnabled":true}' \
