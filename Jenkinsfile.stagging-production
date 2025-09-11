@@ -71,45 +71,45 @@ pipeline {
                 }
             }
         }
-        stage("Install Dependencies") {
-            when {
-                // branch 'master'
-                expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
-            }
-            steps {
-                sh '''
-                    echo "Installing backend dependencies"
-                    cd backend
-                    npm install
+        // stage("Install Dependencies") {
+        //     when {
+        //         // branch 'master'
+        //         expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
+        //     }
+        //     steps {
+        //         sh '''
+        //             echo "Installing backend dependencies"
+        //             cd backend
+        //             npm install
 
-                    echo "Installing frontend dependencies"
-                    cd ../frontend
-                    npm install
-                '''
-            }
-        }
+        //             echo "Installing frontend dependencies"
+        //             cd ../frontend
+        //             npm install
+        //         '''
+        //     }
+        // }
 
-        stage("OWASP Dependency Check") {
-            when {
-                // branch 'master'
-                expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
-            }
-            steps {
-                script {
-                    echo "Running OWASP Dependency Check"
-                    sh '''
-                        mkdir -p owasp-reports
-                        docker run --rm  -v $(pwd):/src -v $(pwd)/owasp-reports:/report owasp/dependency-check \
-                        --project "NodeJS Project" \
-                        --scan /src \
-                        --format "ALL" \
-                        --out /report \
-                        --nvdApiKey aceb4a41-5ab7-4e5b-bda8-bd8f2f52ba24
-                    '''
-                    archiveArtifacts artifacts: 'owasp-reports/*', allowEmptyArchive: true
-                }
-            }
-        }
+        // stage("OWASP Dependency Check") {
+        //     when {
+        //         // branch 'master'
+        //         expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
+        //     }
+        //     steps {
+        //         script {
+        //             echo "Running OWASP Dependency Check"
+        //             sh '''
+        //                 mkdir -p owasp-reports
+        //                 docker run --rm  -v $(pwd):/src -v $(pwd)/owasp-reports:/report owasp/dependency-check \
+        //                 --project "NodeJS Project" \
+        //                 --scan /src \
+        //                 --format "ALL" \
+        //                 --out /report \
+        //                 --nvdApiKey aceb4a41-5ab7-4e5b-bda8-bd8f2f52ba24
+        //             '''
+        //             archiveArtifacts artifacts: 'owasp-reports/*', allowEmptyArchive: true
+        //         }
+        //     }
+        // }
         
 
         stage('Docker Login, Build, Tag and Push') {
@@ -297,6 +297,9 @@ pipeline {
                                     "sudo systemctl start docker",
                                     "sudo systemctl enable docker",
                                     "sudo chmod 777 /var/run/docker.sock",
+
+                                    echo "cloning repo-for docker-compose",
+                                    git clone 
 
                                     "echo frontend deployment started",
                                     "docker pull $docker_username/$frontend_docker_image:git-${GIT_COMMIT}",
