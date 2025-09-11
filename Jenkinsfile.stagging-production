@@ -1,11 +1,11 @@
 pipeline {
     agent any
-    parameters{
-        choice(name: 
-        'ENVIRONMENT', 
-        choices: ['staging', 'production', 'cleanup-for-dev', 'cleanup-for-prod'], 
-        description: 'Select the deployment environment')
-    }
+    // parameters{
+    //     choice(name: 
+    //     'ENVIRONMENT', 
+    //     choices: ['staging', 'production', 'cleanup-for-dev', 'cleanup-for-prod'], 
+    //     description: 'Select the deployment environment')
+    // }
 
 
 
@@ -25,10 +25,10 @@ pipeline {
         }
 
         stage('SonarQube Code Analysis') {
-            when {
-                // branch 'master'
-                expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
-            }
+            // when {
+            //     // branch 'master'
+            //     expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
+            // }
             steps {
              script {
                def scannerHome = tool 'lil-sonarqube'
@@ -54,10 +54,10 @@ pipeline {
 
          
         stage('SonarQube Quality Gate') {
-            when {
-                // branch 'master'
-                expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
-            }
+            // when {
+            //     // branch 'master'
+            //     expression { return params.ENVIRONMENT == 'staging' || params.ENVIRONMENT == 'production' }
+            // }
             steps {
                 script{
 
@@ -114,16 +114,16 @@ pipeline {
 
         stage('Docker Login, Build, Tag and Push') {
             
-            when {
+            // when {
 
-                // branch 'master'
+            //     // branch 'master'
                 
             
-                expression { return params.ENVIRONMENT == 'staging'|| params.ENVIRONMENT == 'production' }
+            //     expression { return params.ENVIRONMENT == 'staging'|| params.ENVIRONMENT == 'production' }
                 
                 
                 
-            }
+            // }
             steps {
                 withCredentials([
                     usernamePassword(
@@ -152,10 +152,10 @@ pipeline {
             }
         }
         stage("Trviy-scan"){
-            when{
-                // branch 'master'
-                expression {return params.ENVIRONMENT == 'staging'}
-            }
+            // when{
+            //     // branch 'master'
+            //     expression {return params.ENVIRONMENT == 'staging'}
+            // }
             steps {
                sh '''
                 mkdir -p trivy-reports
@@ -183,10 +183,10 @@ pipeline {
 
 
         stage('Test') {
-            when {
-                // branch 'master'
-                expression { return params.ENVIRONMENT == 'staging' }
-            }
+            // when {
+            //     // branch 'master'
+            //     expression { return params.ENVIRONMENT == 'staging' }
+            // }
             steps {
                 sh '''
                     echo "Running tests for frontend"
@@ -215,14 +215,14 @@ pipeline {
 
         stage('Deploy to dev') {
             
-            when {
-                // branch 'master'
+            // when {
+            //     // branch 'master'
                 
-                    expression { return params.ENVIRONMENT == 'staging' }
+            //         expression { return params.ENVIRONMENT == 'staging' }
                    
                 
                 
-            }
+            // }
             steps {
                 withCredentials([
                     [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS-KEYS']
@@ -266,10 +266,10 @@ pipeline {
         }
 
         stage('deploy to production') {
-            when {
-                // branch 'production'
-                expression { return params.ENVIRONMENT == 'production' }
-            }
+            // when {
+            //     // branch 'production'
+            //     expression { return params.ENVIRONMENT == 'production' }
+            // }
             steps {
                 echo 'Deploy to production stage - Manual Approval Required'
                 input message: 'Approve deployment to production?', ok: 'Deploy'
@@ -296,9 +296,7 @@ pipeline {
                                     "sudo systemctl enable docker",
                                     "sudo chmod 777 /var/run/docker.sock",
 
-                                    echo "cloning repo-for docker-compose",
-                                    git clone https://github.com/Zenisis/NodeJS-project.git || true,
-                                    git pull origin production || true,
+                                    
                                     
 
                                     "echo frontend deployment started",
